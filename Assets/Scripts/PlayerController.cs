@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-	[SerializeField] private float thrust, minTiltSmooth, maxTiltSmooth, hoverDistance, hoverSpeed;
-	private bool start;
-	private float timer, tiltSmooth, y;
+	[SerializeField] private float minTiltSmooth, maxTiltSmooth, hoverDistance, hoverSpeed;
+    [SerializeField] private float gravity = -9.8f;
+    [SerializeField] private float fallGravityScale = 2f;
+    private float gravityScale = 1f;
+    private Vector2 velocity = Vector2.zero;
+    [SerializeField] private float jumpHeight = 1.2f;
+    private bool start;
+    private bool isDropped = false;
+    private float timer, tiltSmooth, y;
 	private Rigidbody2D playerRigid;
 	private Quaternion downRotation, upRotation;
 
@@ -15,7 +21,17 @@ public class PlayerController : MonoBehaviour {
 		playerRigid = GetComponent<Rigidbody2D> ();
 		downRotation = Quaternion.Euler (0, 0, -90);
 		upRotation = Quaternion.Euler (0, 0, 35);
-	}
+        isDropped = false;
+        gravityScale = 1f;
+    }
+
+	void GravityUpdate()
+	{
+		if(isDropped) return;
+
+        velocity.y += gravity * gravityScale * Time.deltaTime;
+        playerRigid.velocity = velocity;
+    }
 
 	void Update () {
 		if (!start) {
@@ -40,21 +56,24 @@ public class PlayerController : MonoBehaviour {
 					GameManager.Instance.GetReady ();
 					GetComponent<Animator>().speed = 2;
 				}
-				playerRigid.gravityScale = 1f;
+
 				tiltSmooth = minTiltSmooth;
 				transform.rotation = upRotation;
 				playerRigid.velocity = Vector2.zero;
-				// Push the player upwards
-				playerRigid.AddForce (Vector2.up * thrust);
-				SoundManager.Instance.PlayTheAudio("Flap");
+                // Push the player upwards
+                velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+                gravityScale = 1f;
+
+                SoundManager.Instance.PlayTheAudio("Flap");
 			}
 		}
 		if (playerRigid.velocity.y < -1f) {
 			// Increase gravity so that downward motion is faster than upward motion
 			tiltSmooth = maxTiltSmooth;
-			playerRigid.gravityScale = 2f;
-		}
-	}
+            gravityScale = fallGravityScale;
+        }
+        GravityUpdate();
+    }
 
 	void OnTriggerEnter2D (Collider2D col) {
 		if (col.transform.CompareTag ("Score")) {
@@ -71,15 +90,16 @@ public class PlayerController : MonoBehaviour {
 
 	void OnCollisionEnter2D (Collision2D col) {
 		if (col.transform.CompareTag ("Ground")) {
-			playerRigid.simulated = false;
+            playerRigid.simulated = false;
 			KillPlayer ();
 			transform.rotation = downRotation;
+            isDropped = true;
 		}
 	}
 
 	public void KillPlayer () {
-		GameManager.Instance.EndGame ();
-		playerRigid.velocity = Vector2.zero;
+        GameManager.Instance.EndGame ();
+
 		// Stop the flapping animation
 		GetComponent<Animator> ().enabled = false;
         // Change color to black and white

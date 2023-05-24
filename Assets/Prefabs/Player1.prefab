@@ -117,11 +117,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58971bba16e216d429598c6a31faf0d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thrust: 225
   minTiltSmooth: 1
   maxTiltSmooth: 5
   hoverDistance: 0.1
   hoverSpeed: 5
+  gravity: -9.8
+  fallGravityScale: 2
+  jumpHeight: 1.2
 --- !u!50 &50947411552664758
 Rigidbody2D:
   serializedVersion: 4

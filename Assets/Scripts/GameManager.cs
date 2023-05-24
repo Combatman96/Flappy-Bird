@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour {
 		getReadyAnim.SetTrigger ("Start");
 
 		flappy.GetComponentInChildren<Rigidbody2D> ().velocity = Vector2.zero;
-		flappy.GetComponentInChildren<Rigidbody2D> ().gravityScale = 1f;
+		// flappy.GetComponentInChildren<Rigidbody2D> ().gravityScale = 1f;
 	}
 
 	public void UpdateScore () {
