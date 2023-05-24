@@ -5,11 +5,18 @@ using UnityEngine;
 public class ObstacleSpawner : MonoBehaviour {
 
 	[SerializeField] private float waitTime;
-	[SerializeField] private GameObject[] obstaclePrefabs;
+	[SerializeField] private ObstacleBehaviour obstaclePrefabs;
 	private float tempTime;
 
-	void Start(){
+    private Vector3 oldAltitude = Vector3.zero;
+    [SerializeField] private int difficultyCycle = 6;
+    [SerializeField] private int numOfEasy = 3;
+    private int cycle = 0;
+
+    void Start(){
 		tempTime = waitTime - Time.deltaTime;
+		cycle = 0;
+		oldAltitude = Vector3.zero;
 	}
 
 	void LateUpdate () {
@@ -18,8 +25,13 @@ public class ObstacleSpawner : MonoBehaviour {
 			if(tempTime > waitTime){
 				// Wait for some time, create an obstacle, then set wait time to 0 and start again
 				tempTime = 0;
-				GameObject pipeClone = Instantiate(obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)], transform.position, transform.rotation);
-			}
+				var pipeClone = Instantiate(obstaclePrefabs, transform.position, transform.rotation);
+                bool isHard = (cycle > numOfEasy);
+                pipeClone.SetAltitude(oldAltitude, isHard);
+                oldAltitude = pipeClone.GetAltitude();
+                cycle++;
+				if(cycle >= difficultyCycle) cycle = 0;
+            }
 		}
 	}
 
