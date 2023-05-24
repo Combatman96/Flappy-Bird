@@ -37,7 +37,8 @@ public class ObstacleSpawner : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D col){
 		if(col.gameObject.transform.parent != null){
-			Destroy(col.gameObject.transform.parent.gameObject);
+            var obstacle = col.GetComponentInParent<ObstacleBehaviour>();
+            Destroy(obstacle.gameObject);
 		}else{
 			Destroy(col.gameObject);
 		}
