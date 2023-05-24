@@ -84,4 +84,8 @@ public class PlayerController : MonoBehaviour {
 		GetComponent<Animator> ().enabled = false;
 	}
 
+	public void RandomFlappyColor()
+	{
+        GetComponent<Animator>().SetInteger(Animator.StringToHash("PlayerNum"), Random.Range(0, 3));
+    }
 }
