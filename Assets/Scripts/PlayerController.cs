@@ -82,7 +82,9 @@ public class PlayerController : MonoBehaviour {
 		playerRigid.velocity = Vector2.zero;
 		// Stop the flapping animation
 		GetComponent<Animator> ().enabled = false;
-	}
+        // Change color to black and white
+        GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_EffectAmount"), 1.0f);
+    }
 
 	public void RandomFlappyColor()
 	{
